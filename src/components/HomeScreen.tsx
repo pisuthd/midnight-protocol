@@ -83,20 +83,19 @@ export const HomeScreen = ({}: HomeScreenProps) => {
       
        
       {/* Main Action Icons */}
-      <div className="grid grid-cols-2 gap-6 max-w-md mx-auto">
+      <div className="grid grid-cols-4 gap-6 max-w-md mx-auto">
         {icons.slice(0, 4).map((item) => (
           <button
             key={item.id}
             onClick={() => handleIconClick(item.id)}
-            className={`group relative flex flex-col items-center space-y-4 p-6 rounded-3xl bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 hover:border-gray-600/70 transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${item.shadowColor} hover:shadow-2xl active:scale-95`}
+            className={`group relative flex flex-col items-center space-y-4 p-6    ${item.shadowColor} hover:shadow-2xl active:scale-95`}
           >
-            <div className={`relative p-5 rounded-2xl bg-gradient-to-br ${item.gradient} text-white group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+            <div className={`relative p-5 rounded-2xl bg-gradient-to-br ${item.gradient} text-white   transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
               {item.icon}
               <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300`}></div>
             </div>
             <div className="text-center space-y-1">
-              <span className="text-white font-semibold text-lg">{item.label}</span>
-              <p className="text-gray-400 text-sm leading-tight">{item.description}</p>
+              <span className="text-white font-semibold text-lg">{item.label}</span> 
             </div>
             
             {/* Glow effect */}
@@ -104,22 +103,7 @@ export const HomeScreen = ({}: HomeScreenProps) => {
           </button>
         ))}
       </div>
-
-      {/* Secondary Actions */}
-      <div className="flex justify-center">
-        <button
-          onClick={() => handleIconClick('analytics')}
-          className={`group relative flex items-center space-x-3 px-6 py-4 rounded-2xl bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 hover:border-gray-600/70 transition-all duration-300 hover:scale-105 ${icons[4].shadowColor} hover:shadow-xl`}
-        >
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${icons[4].gradient} text-white group-hover:scale-110 transition-transform duration-300`}>
-            {icons[4].icon}
-          </div>
-          <div className="text-left">
-            <span className="text-white font-semibold">{icons[4].label}</span>
-            <p className="text-gray-400 text-sm">{icons[4].description}</p>
-          </div>
-        </button>
-      </div>
+ 
  
     </div>
   );
