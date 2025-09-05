@@ -12,3 +12,116 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+/* RainbowKit Custom Styling */
+:root {
+  --rk-colors-modalBackground: rgb(17 24 39);
+  --rk-colors-modalBorder: rgb(55 65 81);
+  --rk-colors-connectButtonBackground: linear-gradient(to bottom right, rgb(31 41 55), rgb(0 0 0));
+  --rk-colors-connectButtonText: rgb(255 255 255);
+  --rk-radii-connectButton: 12px;
+  --rk-colors-connectButtonBackgroundError: linear-gradient(to bottom right, rgb(127 29 29), rgb(0 0 0));
+}
+
+/* Override RainbowKit button styles */
+[data-rk] button[data-testid="rk-connect-button"] {
+  background: linear-gradient(to bottom right, rgb(31 41 55), rgb(0 0 0)) !important;
+  border: 1px solid rgb(55 65 81) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  padding: 12px 24px !important;
+}
+
+[data-rk] button[data-testid="rk-connect-button"]:hover {
+  background: linear-gradient(to bottom right, rgb(31 41 55), rgb(0 0 0)) !important;
+  border-color: rgb(75 85 99) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-rk] button[data-testid="rk-account-button"] {
+  background: linear-gradient(to bottom right, rgb(31 41 55), rgb(0 0 0)) !important;
+  border: 1px solid rgb(55 65 81) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  padding: 12px 24px !important;
+}
+
+[data-rk] button[data-testid="rk-account-button"]:hover {
+  background: linear-gradient(to bottom right, rgb(31 41 55), rgb(0 0 0)) !important;
+  border-color: rgb(75 85 99) !important;
+}
+
+/* Mobile modal animations */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .h-safe-area-inset-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+
+  /* Custom animation for slide up */
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out forwards;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Enhanced focus states for better UX */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900;
+  }
+
+  /* Smooth backdrop blur */
+  .backdrop-blur-smooth {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Better scrolling for modals */
+.modal-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Enhanced mobile interactions */
+@media (max-width: 768px) {
+  .modal-container {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+}
