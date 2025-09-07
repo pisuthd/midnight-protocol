@@ -6,19 +6,15 @@ Main Contracts
 
 Comptroller: 0xB4FDA7fbBF7E64df5Bc4877B5364db8a06DacBC1
 MidnightOracle: 0x7e692c18116D1a8cEFa695939532aabC978a8C43
-StablecoinJumpRateModel: 
-JumpRateModelV2: 
-CollateralRateModel: 
-cUSDC.e (Stablecoin): 
-cBTC (Volatile): 
-cSOMI (Volatile): 
-cETH (Volatile): 
+StablecoinJumpRateModel: 0xe41f782B4E6288b646D957c1397287bC82993851
+JumpRateModelV2: 0x6D0B1bbFF372D85Fe22C81F239dd79132B8a3B79
+cUSDC.e (Stablecoin): 0x82aCE549a303DDc0da4e37c7E1dc8A635A2fee48
+cSOMI (Volatile): 0x8ebd6adbfe474934691f68d8166c45628fdacb77
+cETH (Volatile): 0x8BF778d9E3b6bBDC4572403B492E15dCD6336D84
 
 Mock Tokens
 ================================================
 
 USDC.e: 0x2acbd49d618dca9f23b069184fc411d734061381
-BTC: 0xcd5f8fbd9fc7febb50e47607c5a46086ad22d9d5
 SOMI: 0xf3ec24960f5922255a77c2936076ad7188fe7641
 ETH: 0xfed8ebb0e71f5d39faca7b405686e1f23e4e308a
-
