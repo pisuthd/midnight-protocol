@@ -164,8 +164,7 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
         <h1 className='text-3xl font-extrabold'>B</h1>
       ),
       gradient: 'from-blue-500 to-cyan-600'
-    },
-
+    }, 
     {
       id: 'faq',
       label: 'FAQ',

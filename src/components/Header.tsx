@@ -1,9 +1,14 @@
 import { useModal } from '../context/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useDisconnect } from 'wagmi';
 
-interface HeaderProps {}
+interface HeaderProps { }
 
-export const Header = ({}: HeaderProps) => {
+export const Header = ({ }: HeaderProps) => {
+
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+
   const { openModal } = useModal();
 
   const handleSettingsClick = () => {
@@ -15,17 +20,28 @@ export const Header = ({}: HeaderProps) => {
       <div className="flex items-center">
         {/* Custom styled ConnectButton wrapper */}
         <div className="[&>div]:!bg-gradient-to-br [&>div]:!from-gray-900 [&>div]:!to-black [&>div]:!border [&>div]:!border-gray-700 [&>div]:!shadow-lg hover:[&>div]:!from-gray-800 hover:[&>div]:!to-black hover:[&>div]:!border-gray-600 [&>div]:!transition-all [&>div]:!duration-200">
-          <ConnectButton 
-            chainStatus="none"
-            showBalance={false}
-          />
+          {!address && (
+            <ConnectButton
+              chainStatus="none"
+              showBalance={false}
+            />
+          )}
+          {address && (
+            <button
+              onClick={() => disconnect()}
+              className="flex cursor-pointer px-6 items-center justify-center bg-gradient-to-br from-gray-900 to-black hover:from-gray-800 hover:to-black text-white p-3 rounded-xl font-medium border border-gray-700 hover:border-gray-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Disconnect
+            </button>
+          )}
+
         </div>
       </div>
-      
-      <div className="flex items-center space-x-3"> 
-        
+
+      <div className="flex items-center space-x-3">
+
         {/* Settings Button */}
-        <button 
+        <button
           onClick={handleSettingsClick}
           className="flex cursor-pointer items-center justify-center bg-gradient-to-br from-gray-900 to-black hover:from-gray-800 hover:to-black text-white p-3 rounded-xl font-medium border border-gray-700 hover:border-gray-600 transition-all duration-200 shadow-lg hover:shadow-xl"
         >

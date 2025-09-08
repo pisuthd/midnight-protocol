@@ -2,12 +2,12 @@ import { createContext, useContext, ReactNode } from 'react';
 
 export interface ModalState {
   isOpen: boolean;
-  type: 'supply' | 'borrow' | 'learn' | 'settings' | null;
+  type: 'supply' | 'borrow' | 'learn' | 'settings' | 'faucet' | null;
   data?: any;
 }
 
 export type ModalAction =
-  | { type: 'OPEN_MODAL'; payload: { modalType: 'supply' | 'borrow' | 'learn' | 'settings'; data?: any } }
+  | { type: 'OPEN_MODAL'; payload: { modalType: 'supply' | 'borrow' | 'learn' | 'settings' | 'faucet'; data?: any } }
   | { type: 'CLOSE_MODAL' };
 
 export const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
@@ -37,7 +37,7 @@ export const initialModalState: ModalState = {
 
 export interface ModalContextType {
   state: ModalState;
-  openModal: (modalType: 'agent' | 'supply' | 'borrow' | 'faq' | 'learn' | 'settings', data?: any) => void;
+  openModal: (modalType: 'agent' | 'supply' | 'borrow' | 'faq' | 'learn' | 'settings' | 'faucet', data?: any) => void;
   closeModal: () => void;
 }
 

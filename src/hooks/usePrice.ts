@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PRICE_API_CONFIG } from "../utils/tokenConfig"
+import { PRICE_API_CONFIG, ALL_TOKENS, getPriceSymbol, getAllPriceSymbols } from "../utils/tokenConfig"
 
 interface TokenPriceData {
   symbol: string;
@@ -26,21 +26,39 @@ interface TokenPrice {
   lastUpdated: Date;
 }
 
+interface PortfolioMetrics {
+  totalValue: number;
+  totalChange24h: number;
+  totalChangePercent: number;
+  topGainer: { symbol: string; change: number } | null;
+  topLoser: { symbol: string; change: number } | null;
+}
+
 interface UsePriceUpdatesOptions {
-  symbols: string[];
-  updateInterval?: number; // in milliseconds
+  symbols?: string[];
+  updateInterval?: number;
   enableRealTimeUpdates?: boolean;
+  includePortfolioMetrics?: boolean;
+  balances?: Record<string, { balance: string; raw: bigint }>;
 }
 
 const API_ENDPOINT = PRICE_API_CONFIG.endpoint;
 
 export const usePrice = ({ 
-  symbols
+  symbols,
+  updateInterval = 30000,
+  enableRealTimeUpdates = false,
+  includePortfolioMetrics = false,
+  balances
 }: UsePriceUpdatesOptions) => {
 
   const [prices, setPrices] = useState<Record<string, TokenPrice>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  // Use provided symbols or default to all supported tokens
+  const targetSymbols = symbols || getAllPriceSymbols();
 
   // Fetch prices from backend API
   const fetchRealPrices = async (): Promise<Record<string, TokenPrice>> => {
@@ -57,7 +75,6 @@ export const usePrice = ({
         throw new Error('Invalid API response format');
       }
 
-
       // Convert API data to our format
       const priceMap: Record<string, TokenPrice> = {};
 
@@ -65,12 +82,7 @@ export const usePrice = ({
       apiData.data.forEach((tokenData: TokenPriceData) => {
         let mappedSymbol = tokenData.symbol;
         
-        // Handle symbol mapping 
-        // if (PRICE_API_CONFIG.symbolMapping[tokenData.symbol as keyof typeof PRICE_API_CONFIG.symbolMapping]) {
-        //   mappedSymbol = PRICE_API_CONFIG.symbolMapping[tokenData.symbol as keyof typeof PRICE_API_CONFIG.symbolMapping];
-        // }
-        
-        if (symbols.includes(mappedSymbol)) {
+        if (targetSymbols.includes(mappedSymbol)) {
           priceMap[mappedSymbol] = {
             symbol: mappedSymbol,
             price: tokenData.price,
@@ -83,7 +95,7 @@ export const usePrice = ({
       });
 
       // Add USDC as stable coin if not in API (always $1.00)
-      if (symbols.includes('USDC') && !priceMap['USDC']) {
+      if (targetSymbols.includes('USDC') && !priceMap['USDC']) {
         priceMap['USDC'] = {
           symbol: 'USDC',
           price: 1.0001,
@@ -106,9 +118,10 @@ export const usePrice = ({
       setIsLoading(true);
       setError(null);
       
-      const newPrices = await fetchRealPrices()
+      const newPrices = await fetchRealPrices();
       
       setPrices(newPrices);
+      setLastUpdated(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch prices');
     } finally {
@@ -116,12 +129,19 @@ export const usePrice = ({
     }
   };
 
+  // Auto-update prices
   useEffect(() => {
     updatePrices();
-  }, [symbols.join(',')]);
+    
+    if (enableRealTimeUpdates && updateInterval > 0) {
+      const interval = setInterval(updatePrices, updateInterval);
+      return () => clearInterval(interval);
+    }
+  }, [targetSymbols.join(','), enableRealTimeUpdates, updateInterval]);
 
   const getFormattedPrice = (symbol: string): string => {
-    const price = prices[symbol];
+    const priceSymbol = getPriceSymbol(symbol);
+    const price = prices[priceSymbol];
     if (!price) return '$0.00';
     
     // Format based on price range for better readability
@@ -135,7 +155,8 @@ export const usePrice = ({
   };
 
   const getFormattedChange = (symbol: string): { text: string; isPositive: boolean } => {
-    const price = prices[symbol];
+    const priceSymbol = getPriceSymbol(symbol);
+    const price = prices[priceSymbol];
     if (!price) return { text: '0.00%', isPositive: true };
     
     const isPositive = price.change24h >= 0;
@@ -146,12 +167,14 @@ export const usePrice = ({
   };
 
   const getLastUpdated = (symbol: string): Date | null => {
-    const price = prices[symbol];
+    const priceSymbol = getPriceSymbol(symbol);
+    const price = prices[priceSymbol];
     return price ? price.lastUpdated : null;
   };
 
   const getMarketData = (symbol: string) => {
-    const price = prices[symbol];
+    const priceSymbol = getPriceSymbol(symbol);
+    const price = prices[priceSymbol];
     if (!price) return null;
     
     return {
@@ -161,6 +184,70 @@ export const usePrice = ({
     };
   };
 
+  const getTokenPrice = (symbol: string): number => {
+    const priceSymbol = getPriceSymbol(symbol);
+    return prices[priceSymbol]?.price || 0;
+  };
+
+  // Portfolio metrics calculation
+  const calculatePortfolioMetrics = (): PortfolioMetrics => {
+    if (!includePortfolioMetrics || !balances) {
+      return {
+        totalValue: 0,
+        totalChange24h: 0,
+        totalChangePercent: 0,
+        topGainer: null,
+        topLoser: null
+      };
+    }
+
+    let totalValue = 0;
+    let totalValueYesterday = 0;
+    let topGainer: { symbol: string; change: number } | null = null;
+    let topLoser: { symbol: string; change: number } | null = null;
+
+    Object.entries(ALL_TOKENS).forEach(([symbol, token]) => {
+      const balance = balances[symbol];
+      if (!balance) return;
+
+      const price = getTokenPrice(symbol);
+      const change24h = prices[getPriceSymbol(symbol)]?.change24h || 0;
+      
+      if (price > 0) {
+        const balanceNum = parseFloat(balance.balance.replace(/[MK]$/, '')) * 
+          (balance.balance.endsWith('M') ? 1000000 : balance.balance.endsWith('K') ? 1000 : 1);
+        
+        const currentValue = balanceNum * price;
+        const yesterdayPrice = price / (1 + change24h / 100);
+        const yesterdayValue = balanceNum * yesterdayPrice;
+        
+        totalValue += currentValue;
+        totalValueYesterday += yesterdayValue;
+
+        // Track top gainer/loser
+        if (!topGainer || change24h > topGainer.change) {
+          topGainer = { symbol, change: change24h };
+        }
+        if (!topLoser || change24h < topLoser.change) {
+          topLoser = { symbol, change: change24h };
+        }
+      }
+    });
+
+    const totalChange24h = totalValue - totalValueYesterday;
+    const totalChangePercent = totalValueYesterday > 0 ? (totalChange24h / totalValueYesterday) * 100 : 0;
+
+    return {
+      totalValue,
+      totalChange24h,
+      totalChangePercent,
+      topGainer,
+      topLoser
+    };
+  };
+
+  const portfolioMetrics = calculatePortfolioMetrics();
+
   const refetch = async () => {
     await updatePrices();
   };
@@ -169,12 +256,15 @@ export const usePrice = ({
     prices,
     isLoading,
     error,
+    lastUpdated,
     getFormattedPrice,
     getFormattedChange,
     getLastUpdated,
     getMarketData,
+    getTokenPrice,
+    portfolioMetrics,
     refetch
   };
 };
 
-export type { TokenPrice, UsePriceUpdatesOptions, TokenPriceData, ApiResponse };
+export type { TokenPrice, UsePriceUpdatesOptions, TokenPriceData, ApiResponse, PortfolioMetrics };

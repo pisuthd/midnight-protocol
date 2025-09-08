@@ -1,13 +1,13 @@
-// import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
-import { http, createConfig } from "wagmi";
+// import { http, createConfig } from "wagmi";
 import { somniaTestnet } from "wagmi/chains";
+// import { injected, metaMask, walletConnect } from 'wagmi/connectors';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+
 
 // export const config = createConfig({
 //   chains: [somniaTestnet],
-//   connectors: [farcasterFrame()],
 //   transports: {
-//     [somniaTestnet.id]: http()
+//     [somniaTestnet.id]: http('https://dream-rpc.somnia.network'),
 //   },
 // });
 

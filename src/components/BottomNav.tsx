@@ -1,4 +1,3 @@
-
 import { Home, MessagesSquare, ChartPie, WalletMinimal } from "lucide-react"
 
 interface BottomNavProps {
@@ -12,28 +11,28 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
       id: 'home' as const,
       label: 'Home',
       icon: (_isActive: boolean) => (
-        <Home/>
+        <Home size={20} />
       )
     },
     {
       id: 'chat' as const,
       label: 'Chat',
       icon: (_isActive: boolean) => (
-        <MessagesSquare/>
+        <MessagesSquare size={20} />
       )
     }, 
     {
       id: 'portfolio' as const,
       label: 'Portfolio',
       icon: (_isActive: boolean) => (
-        <ChartPie/>
+        <ChartPie size={20} />
       )
     }, 
     {
       id: 'wallet' as const,
-      label: 'My Wallet',
+      label: 'Wallet',
       icon: (_isActive: boolean) => (
-        <WalletMinimal/>
+        <WalletMinimal size={20} />
       )
     }
   ];
@@ -50,7 +49,7 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`relative flex flex-col items-center py-3 px-6 transition-all duration-300 rounded-xl ${isActive
+              className={`relative flex flex-col items-center py-3 px-6 transition-all duration-300 rounded-xl flex-1 max-w-[80px] ${isActive
                   ? 'text-white bg-gray-800/50'
                   : 'text-gray-500 hover:text-gray-300 hover:bg-gray-900/30'
                 }`}
@@ -60,8 +59,12 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
                 <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
               )}
 
-              {tab.icon(isActive)}
-              <span className={`text-xs mt-1.5 font-medium transition-all duration-200 ${isActive ? 'text-white' : 'text-gray-500'
+              {/* Icon container with fixed dimensions */}
+              <div className="w-5 h-5 flex items-center justify-center">
+                {tab.icon(isActive)}
+              </div>
+              
+              <span className={`text-xs mt-1.5 font-medium transition-all duration-200 text-center ${isActive ? 'text-white' : 'text-gray-500'
                 }`}>
                 {tab.label}
               </span>
