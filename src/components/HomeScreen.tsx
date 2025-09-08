@@ -1,10 +1,59 @@
 import { useModal } from '../context/ModalContext';
 import { useState, useEffect, useRef } from 'react';
-import { Plus } from 'lucide-react';
+import { usePrice } from '../hooks/usePrice';
+
+const tokenConfig = [
+  {
+    symbol: 'USDC',
+    name: 'USDC.e price',
+    icon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
+  },
+  {
+    symbol: 'SOMNIA',
+    name: 'SOMNIA price',
+    icon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/37637.png'
+  },
+  {
+    symbol: 'ETH',
+    name: 'ETH price',
+    icon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+  }
+];
 
 interface HomeScreenProps { }
 
+const formatLastUpdated = (date: Date | null): string => {
+  if (!date) return '';
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+
+  if (diffHours > 0) {
+    return `${diffHours}h ago`;
+  } else if (diffMins > 0) {
+    return `${diffMins}m ago`;
+  } else {
+    return 'Just now';
+  }
+};
+
 export const HomeScreen = ({ }: HomeScreenProps) => {
+
+  const symbols = tokenConfig.map(token => token.symbol);
+
+  const {
+    prices,
+    isLoading,
+    error,
+    getFormattedPrice,
+    getFormattedChange,
+    getLastUpdated
+  } = usePrice({
+    symbols
+  });
+
   const { openModal } = useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -24,7 +73,7 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
       title: 'Protocol Stats',
       items: [
         { label: 'Total Value Locked', value: '$2.4M', change: '+15.2%' },
-        { label: 'Active Users', value: '1,247', change: '+8.1%' },
+        // { label: 'Active Wallets', value: '1,247', change: '+8.1%' },
         { label: 'AI Agents Active', value: '89', change: '+23.4%' }
       ],
       gradient: 'from-blue-900/50 via-blue-800/30 to-cyan-900/50',
@@ -33,25 +82,8 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
     {
       type: 'tokens',
       title: 'Supported Assets',
-      tokens: [
-        { symbol: 'SOMI', name: 'Somnia Token', price: '$0.0234', apy: '12.5%', change: '+12.5%' },
-        { symbol: 'USDC.e', name: 'USD Coin', price: '$1.00', apy: '8.2%', change: '+0.01%' },
-        { symbol: 'ETH', name: 'Ethereum', price: '$2,456', apy: '6.8%', change: '+2.3%' }
-      ],
       gradient: 'from-green-900/50 via-emerald-800/30 to-teal-900/50',
       accent: 'green'
-    },
-    {
-      type: 'rates',
-      title: 'Interest Rates',
-      subtitle: 'Current market rates',
-      rates: [
-        { asset: 'SOMI', supply: '12.5%', borrow: '15.2%' },
-        { asset: 'USDC.e', supply: '8.2%', borrow: '11.8%' },
-        { asset: 'ETH', supply: '6.8%', borrow: '9.4%' }
-      ],
-      gradient: 'from-orange-900/50 via-red-800/30 to-pink-900/50',
-      accent: 'orange'
     }
   ];
 
@@ -111,49 +143,42 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
   const icons = [
     {
       id: 'agent',
-      label: 'Add Agent',
+      label: 'Agent',
       icon: (
-        <Plus size={32}/>
+        <h1 className='text-3xl font-extrabold'>A</h1>
       ),
       gradient: 'from-purple-500 to-indigo-600'
-    },
-    {
-      id: 'borrow',
-      label: 'Borrow',
-      icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      ),
-      gradient: 'from-blue-500 to-cyan-600'
     },
     {
       id: 'supply',
       label: 'Supply',
       icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
+        <h1 className='text-3xl font-extrabold'>S</h1>
       ),
       gradient: 'from-green-500 to-emerald-600'
     },
     {
+      id: 'borrow',
+      label: 'Borrow',
+      icon: (
+        <h1 className='text-3xl font-extrabold'>B</h1>
+      ),
+      gradient: 'from-blue-500 to-cyan-600'
+    },
+
+    {
       id: 'faq',
       label: 'FAQ',
       icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <h1 className='text-3xl font-extrabold'>F</h1>
       ),
       gradient: 'from-yellow-500 to-orange-600'
     },
     {
       id: 'midnight',
-      label: 'MIDNIGHT',
+      label: 'Midnight',
       icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-        </svg>
+        <h1 className='text-3xl font-extrabold'>M</h1>
       ),
       gradient: 'from-purple-500 to-pink-600'
     },
@@ -161,39 +186,25 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
       id: 'quests',
       label: 'Quests',
       icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-        </svg>
+        <h1 className='text-3xl font-extrabold'>Q</h1>
       ),
       gradient: 'from-teal-500 to-green-600'
     },
     {
-      id: 'contacts',
-      label: 'Contacts',
+      id: 'leaderboard',
+      label: 'Leaderboard',
       icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
+        <h1 className='text-3xl font-extrabold'>L</h1>
       ),
       gradient: 'from-indigo-500 to-purple-600'
-    },
-    {
-      id: 'send',
-      label: 'Send',
-      icon: (
-        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
-      ),
-      gradient: 'from-rose-500 to-pink-600'
     }
   ];
 
-  const handleIconClick = (iconId: string) => {
+  const handleIconClick = (iconId: any) => {
     if (['supply', 'borrow', 'faq', 'agent'].includes(iconId)) {
       openModal(iconId);
     } else {
-      console.log(`${iconId} clicked - coming soon!`);
+      alert(`${iconId} clicked - coming soon!`);
     }
   };
 
@@ -203,7 +214,6 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
         return (
           <div
             className="relative z-10 h-full flex flex-col items-center justify-center text-center"
-
           >
             {/* Background effects matching splash page */}
             <div className="absolute inset-0">
@@ -224,14 +234,10 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
                   <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full blur-xl animate-pulse"></div>
                 </div>
               </div>
-
               <p className="text-gray-300 mx-auto text-sm leading-relaxed max-w-lg animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
                 {slide.description}
               </p>
-
             </div>
-
-
           </div>
         );
 
@@ -242,9 +248,9 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
             className="relative z-10 h-full overflow-y-auto"
             style={{ scrollBehavior: 'smooth' }}
           >
-            <div className="space-y-4 pb-4">
+            <div className="space-y-4 pb-2">
               <h3 className="text-white font-semibold text-lg">{slide.title}</h3>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {slide.items.map((item: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
                     <div>
@@ -266,70 +272,51 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
             className="relative z-10 h-full overflow-y-auto"
             style={{ scrollBehavior: 'smooth' }}
           >
-            <div className="space-y-4 pb-4">
+            <div className="space-y-4 pb-2">
               <h3 className="text-white font-semibold text-lg">{slide.title}</h3>
-              <div className="space-y-3">
-                {slide.tokens.map((token: any, idx: number) => (
-                  <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-xs">{token.symbol.charAt(0)}</span>
+
+              {isLoading && Object.keys(prices).length === 0 && (
+                <div className='p-4 text-white'>
+                  Loading prices...
+                </div>
+              )}
+              {!isLoading && Object.keys(prices).length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {tokenConfig.map((token: any, idx: number) => {
+                    const price = getFormattedPrice(token.symbol);
+                    const change = getFormattedChange(token.symbol);
+                    const lastUpdated = getLastUpdated(token.symbol);
+
+                    return (
+                      <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className='w-8 h-8 rounded-full flex items-center justify-center overflow-hidden'>
+                            <img src={token.icon} alt={`${token.symbol} Logo`} />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{token.name}</p> 
+                            {lastUpdated && (
+                              <p className="text-gray-400 text-xs mt-1">
+                                {lastUpdated ? formatLastUpdated(lastUpdated) : ''}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-semibold">{price}</p> 
+                          <p className={`text-sm font-medium ${change.isPositive ? 'text-green-400' : 'text-red-400'
+                            }`}> 
+                            {change.text}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-white font-medium">{token.symbol}</p>
-                        <p className="text-green-200 text-sm">{token.name}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-white font-semibold">{token.price}</p>
-                      <p className="text-green-400 text-sm">{token.apy} APY</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         );
-
-      case 'rates':
-        return (
-          <div
-            ref={(el) => { contentRefs.current[index] = el; }}
-            className="relative z-10 h-full overflow-y-auto"
-            style={{ scrollBehavior: 'smooth' }}
-          >
-            <div className="space-y-4 pb-4">
-              <div>
-                <h3 className="text-white font-semibold text-lg">{slide.title}</h3>
-                <p className="text-orange-200 text-sm">{slide.subtitle}</p>
-              </div>
-              <div className="space-y-3">
-                {slide.rates.map((rate: any, idx: number) => (
-                  <div key={idx} className="p-3 bg-white/5 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="text-white font-medium">{rate.asset}</p>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-gray-300">Live</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <div className="text-center">
-                        <p className="text-green-400 font-semibold">{rate.supply}</p>
-                        <p className="text-green-300 text-xs">Supply APY</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-red-400 font-semibold">{rate.borrow}</p>
-                        <p className="text-red-300 text-xs">Borrow APY</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
       default:
         return null;
     }
@@ -383,7 +370,7 @@ export const HomeScreen = ({ }: HomeScreenProps) => {
             >
               {/* Icon */}
               <div className={`flex items-center justify-center   p-2 md:p-3 h-[60px] w-[60px] rounded-xl bg-gradient-to-br ${item.gradient} text-white group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
-                {item.icon} 
+                {item.icon}
               </div>
 
               {/* Label */}

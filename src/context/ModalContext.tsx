@@ -37,7 +37,7 @@ export const initialModalState: ModalState = {
 
 export interface ModalContextType {
   state: ModalState;
-  openModal: (modalType: 'supply' | 'borrow' | 'learn' | 'settings', data?: any) => void;
+  openModal: (modalType: 'agent' | 'supply' | 'borrow' | 'faq' | 'learn' | 'settings', data?: any) => void;
   closeModal: () => void;
 }
 

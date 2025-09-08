@@ -37,8 +37,7 @@ export const WalletScreen = ({}: WalletScreenProps) => {
   return (
     <div className="p-6 space-y-6 pb-safe">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-white">Wallet</h2>
-        <p className="text-gray-400">Manage your assets</p>
+        <h2 className="text-2xl font-bold text-white">My Wallet</h2> 
       </div>
 
       {/* Total Balance */}
@@ -58,35 +57,7 @@ export const WalletScreen = ({}: WalletScreenProps) => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-3 gap-3">
-        <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 rounded-xl hover:border-gray-600/70 transition-all duration-200">
-          <div className="p-3 bg-blue-500/20 rounded-xl">
-            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <span className="text-white text-sm font-medium">Receive</span>
-        </button>
-        
-        <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 rounded-xl hover:border-gray-600/70 transition-all duration-200">
-          <div className="p-3 bg-purple-500/20 rounded-xl">
-            <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          </div>
-          <span className="text-white text-sm font-medium">Send</span>
-        </button>
-        
-        <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 rounded-xl hover:border-gray-600/70 transition-all duration-200">
-          <div className="p-3 bg-green-500/20 rounded-xl">
-            <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-          </div>
-          <span className="text-white text-sm font-medium">Swap</span>
-        </button>
-      </div>
+       
 
       {/* Assets List */}
       <div className="bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
